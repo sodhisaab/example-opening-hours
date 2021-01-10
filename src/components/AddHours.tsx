@@ -3,34 +3,40 @@ import TimeField from "react-simple-timefield";
 
 const DAY_LOOKUP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-type HoursType = { [key: string]: { from: string; to: string } };
+type HoursType = { from: string; to: string };
 
 const AddHours: React.FC = () => {
-  const [hours, setHours] = useState<HoursType>({
-    sun: { from: "", to: "" },
-    mon: { from: "", to: "" },
-    tue: { from: "", to: "" },
-    wed: { from: "", to: "" },
-    thu: { from: "", to: "" },
-    fri: { from: "", to: "" },
-    sat: { from: "", to: "" },
-  });
+  const [hours, setHours] = useState<HoursType[]>([
+    { from: "", to: "" },
+    { from: "", to: "" },
+    { from: "", to: "" },
+    { from: "", to: "" },
+    { from: "", to: "" },
+    { from: "", to: "" },
+    { from: "", to: "" },
+  ]);
 
   const handleOnHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, slot } = e.target;
 
+    const existingValue = {
+      from: hours[Number(name)].from,
+      to: hours[Number(name)].to,
+      [slot]: value,
+    };
+
     setHours((prevState) => ({
       ...prevState,
       [name]: {
-        ...prevState[name],
-        [slot]: value,
+        ...existingValue,
       },
     }));
   };
 
   const handleOnFormSubmit = (e: any) => {
     e.preventDefault();
-    console.log("handleOnFormSubmit", hours);
+
+    console.log("Prince ~  newHours", JSON.stringify(hours, null, 2));
   };
 
   return (
@@ -45,14 +51,14 @@ const AddHours: React.FC = () => {
                 <div className="col">
                   <div className="input-group mb-3">
                     <TimeField
-                      value={hours[day.toLowerCase()].from}
+                      value={hours[i].from}
                       onChange={handleOnHoursChange}
                       input={
                         <input
                           type="text"
                           className="form-control"
-                          name={day.toLowerCase()}
-                          id={`first-input-${day}`}
+                          name={`${i}`}
+                          id={`${i}`}
                           slot="from"
                         />
                       }
@@ -65,14 +71,14 @@ const AddHours: React.FC = () => {
                 <div className="col">
                   <div className="input-group mb-3">
                     <TimeField
-                      value={hours[day.toLowerCase()].to}
+                      value={hours[i].to}
                       onChange={handleOnHoursChange}
                       input={
                         <input
                           type="text"
                           className="form-control"
-                          name={day.toLowerCase()}
-                          id={`second-input-${day}`}
+                          name={`${i}`}
+                          id={`${i}`}
                           slot="to"
                         />
                       }
@@ -81,7 +87,7 @@ const AddHours: React.FC = () => {
                       }}
                     />
                   </div>
-                </div>{" "}
+                </div>
               </div>
             );
           })}
