@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TimeField from "react-simple-timefield";
 
 const DAY_LOOKUP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -43,30 +44,44 @@ const AddHours: React.FC = () => {
                 <div className="col">{day}</div>
                 <div className="col">
                   <div className="input-group mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name={day.toLowerCase()}
-                      id={`${i}`}
-                      slot="from"
+                    <TimeField
                       value={hours[day.toLowerCase()].from}
-                      onChange={(e) => handleOnHoursChange(e)}
-                    />
-                  </div>
-                </div>{" "}
-                <div className="col">
-                  <div className="input-group mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name={day.toLowerCase()}
-                      id={`first-input-${day}`}
-                      slot="to"
-                      value={hours[day.toLowerCase()].to}
-                      onChange={(e) => handleOnHoursChange(e)}
+                      onChange={handleOnHoursChange}
+                      input={
+                        <input
+                          type="text"
+                          className="form-control"
+                          name={day.toLowerCase()}
+                          id={`first-input-${day}`}
+                          slot="from"
+                        />
+                      }
+                      style={{
+                        width: "100%",
+                      }}
                     />
                   </div>
                 </div>
+                <div className="col">
+                  <div className="input-group mb-3">
+                    <TimeField
+                      value={hours[day.toLowerCase()].to}
+                      onChange={handleOnHoursChange}
+                      input={
+                        <input
+                          type="text"
+                          className="form-control"
+                          name={day.toLowerCase()}
+                          id={`second-input-${day}`}
+                          slot="to"
+                        />
+                      }
+                      style={{
+                        width: "100%",
+                      }}
+                    />
+                  </div>
+                </div>{" "}
               </div>
             );
           })}
