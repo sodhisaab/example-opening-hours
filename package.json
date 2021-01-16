@@ -12,6 +12,7 @@
     "@types/react-dom": "^16.9.8",
     "bootstrap": "^4.5.3",
     "react": "^17.0.1",
+    "react-bootstrap-icons": "^1.2.3",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
     "react-simple-timefield": "^3.2.3",
