@@ -1,19 +1,34 @@
 import React, { useState } from "react";
+import { DoorClosed, DoorOpenFill } from "react-bootstrap-icons";
+
 import TimeField from "react-simple-timefield";
 
-const DAY_LOOKUP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const DAY_LOOKUP = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-type HoursType = { day: number; from: string; to: string };
+export type HoursType = {
+  day: number;
+  from: string;
+  to: string;
+  isClosed?: boolean;
+};
+export type MergedHours = {
+  days: number[];
+  from: string;
+  to: string;
+  isClosed?: boolean;
+};
 
-const AddHours: React.FC = () => {
+const AddHours: React.FC<{
+  mergedOpeningHours: (mergedHours: MergedHours[]) => void;
+}> = ({ mergedOpeningHours }) => {
   const [hours, setHours] = useState<HoursType[]>([
-    { day: 0, from: "09:00", to: "12:00" },
-    { day: 1, from: "10:00", to: "11:00" },
-    { day: 2, from: "09:00", to: "12:00" },
-    { day: 3, from: "09:00", to: "11:00" },
-    { day: 4, from: "09:00", to: "12:00" },
-    { day: 5, from: "16:00", to: "18:00" },
-    { day: 6, from: "16:00", to: "18:00" },
+    { day: 0, from: "09:00", to: "12:00", isClosed: false },
+    { day: 1, from: "09:00", to: "12:00", isClosed: false },
+    { day: 2, from: "09:00", to: "13:00", isClosed: false },
+    { day: 3, from: "09:00", to: "13:00", isClosed: false },
+    { day: 4, from: "10:00", to: "14:00", isClosed: false },
+    { day: 5, from: "00:00", to: "00:00", isClosed: true },
+    { day: 6, from: "00:00", to: "00:00", isClosed: true },
   ]);
 
   const handleOnHoursChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +43,7 @@ const AddHours: React.FC = () => {
       from: hours[idx].from,
       to: hours[idx].to,
       [slot]: value,
+      isClosed: false,
     };
 
     setHours(newHours);
@@ -39,6 +55,7 @@ const AddHours: React.FC = () => {
       days: number[];
       from: string;
       to: string;
+      isClosed?: boolean;
     }[] = [];
 
     const filteredArr: HoursType[] = hours.reduce(
@@ -53,39 +70,55 @@ const AddHours: React.FC = () => {
       []
     );
 
-    // console.log("Prince ~ filteredArr", filteredArr);
     filteredArr.map((x) => {
-      var results = hours.filter(
+      const results = hours.filter(
         (item) => item?.from === x.from && item?.to === x.to
       );
+
+      const isClosed = results[0].from === "00:00" && results[0].to === "00:00";
 
       days.push({
         days: results.map(({ day }) => day),
         from: results[0].from,
         to: results[0].to,
+        isClosed,
       });
 
       return null;
     });
-    console.log(
-      "Prince ~ handleOnFormSubmit ~ days",
-      JSON.stringify(days, null, 2)
-    );
+
+    mergedOpeningHours(days);
+  };
+
+  const handleOnShopClose = (
+    hour: HoursType,
+    isClosed: boolean,
+    index: number
+  ) => {
+    const newHours = [...hours];
+
+    newHours[index] = {
+      ...newHours[index],
+      ...hour,
+      from: isClosed ? "00:00" : "09:00",
+      to: isClosed ? "00:00" : "17:00",
+      isClosed,
+    };
+
+    setHours(newHours);
   };
 
   return (
-    <div className="mt-5">
+    <>
       <h3>Add opening hours</h3>
-      <div className="">
+      <div>
         <form onSubmit={(e) => handleOnFormSubmit(e)}>
           {hours.map((hour, i) => {
-            const { day } = hour;
+            const { day, isClosed } = hour;
             return (
               <div className="row" key={day}>
-                <div className="col">
-                  {DAY_LOOKUP[day]} {i}
-                </div>
-                <div className="col">
+                <div className="col font-weight-bold">{DAY_LOOKUP[day]}</div>
+                <div className="col-4">
                   <div className="input-group mb-3">
                     <TimeField
                       value={hour.from}
@@ -104,7 +137,7 @@ const AddHours: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="col">
+                <div className="col-4">
                   <div className="input-group mb-3">
                     <TimeField
                       value={hour.to}
@@ -123,11 +156,29 @@ const AddHours: React.FC = () => {
                     />
                   </div>
                 </div>
+                <div className="col-1 pl-0">
+                  <span className="btn p-0">
+                    {isClosed ? (
+                      <DoorClosed
+                        color="royalblue"
+                        size={21}
+                        onClick={() => handleOnShopClose(hour, false, i)}
+                      />
+                    ) : (
+                      <DoorOpenFill
+                        color="royalblue"
+                        size={21}
+                        onClick={() => handleOnShopClose(hour, true, i)}
+                      />
+                    )}
+                  </span>
+                </div>
               </div>
             );
           })}
           <div className="row">
-            <div className="col-6">
+            <div className="col-4" />
+            <div className="col-8">
               <button className="btn btn-primary w-100" type="submit">
                 Save
               </button>
@@ -135,7 +186,7 @@ const AddHours: React.FC = () => {
           </div>
         </form>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,24 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { DAY_LOOKUP, MergedHours } from "./AddHours";
 
-const DAY_LOOKUP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const ShowHours: React.FC<{ hours: MergedHours[] }> = ({ hours }) => {
+  const [openHours, setOpenHours] = useState<MergedHours[]>(hours);
 
-const openHours = [
-  { days: [1, 2, 3, 4, 5], from: "09:00", to: "21:00" },
-  { days: [6, 0], from: "11:00", to: "21:00" },
-];
+  useEffect(() => {
+    setOpenHours(hours);
+  }, [setOpenHours, hours]);
 
-const ShowHours: React.FC = () => {
+  if (!openHours) {
+    return null;
+  }
+
   return (
-    <div className="mt-5">
+    <>
       <h3>Opening hours</h3>
-      {openHours.map((group) => {
-        return group.days.map((day) => (
-          <p key={day}>
-            {DAY_LOOKUP[day]} {group.from} - {group.to}
-          </p>
-        ));
-      })}
-    </div>
+      {openHours.map((group: MergedHours) =>
+        group.days.map((day) => (
+          <div className="row" key={day}>
+            <div className="col-2 font-weight-bold"> {DAY_LOOKUP[day]}</div>
+            {group.isClosed ? (
+              <div className="col-2">Closed</div>
+            ) : (
+              <>
+                <div className="col-2">{group.from}</div>
+                <div className="col-2"> {group.to}</div>
+              </>
+            )}
+          </div>
+        ))
+      )}
+    </>
   );
 };
 
