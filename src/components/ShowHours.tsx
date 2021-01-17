@@ -22,10 +22,18 @@ const ShowHours: React.FC<{ hours: MergedHours[] }> = ({ hours }) => {
             {group.isClosed ? (
               <div className="col-2">Closed</div>
             ) : (
-              <>
-                <div className="col-2">{group.from}</div>
-                <div className="col-2"> {group.to}</div>
-              </>
+              <div className="d-flex flex-column">
+                <div className="row">
+                  <div className="col">{group.from}</div>
+                  <div className="col">{group.to}</div>
+                </div>
+                {group?.additionalHours && (
+                  <div className="row">
+                    <div className="col">{group.additionalHours.from}</div>
+                    <div className="col">{group.additionalHours.to}</div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         ))

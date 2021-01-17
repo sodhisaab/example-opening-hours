@@ -25,6 +25,10 @@ export type MergedHours = {
   from: string;
   to: string;
   isClosed?: boolean;
+  additionalHours?: {
+    from: string;
+    to: string;
+  } | null;
 };
 
 const AddHours: React.FC<{
