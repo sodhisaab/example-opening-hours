@@ -106,6 +106,29 @@ const AddHours: React.FC<{
     setHours(newHours);
   };
 
+  const handleOnAdditionalHoursChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value, slot, id } = e.target;
+
+    const idx = Number(id);
+
+    let newHours = [...hours];
+
+    newHours[idx] = {
+      ...newHours[idx],
+      additionalHours: {
+        from: newHours[idx].additionalHours?.from || "00:00",
+        to: newHours[idx].additionalHours?.to || "00:00",
+        [slot]: value,
+      },
+    };
+
+    console.log("Prince ~ newHours", JSON.stringify(newHours[0], null, 2));
+
+    setHours(newHours);
+  };
+
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const days: {
@@ -290,12 +313,13 @@ const AddHours: React.FC<{
                       <div className="input-group mb-3">
                         <TimeField
                           value={hour.additionalHours.from}
+                          onChange={handleOnAdditionalHoursChange}
                           input={
                             <input
                               type="text"
                               className="form-control"
-                              id="as"
-                              slot="to"
+                              id={`${i}`}
+                              slot="from"
                             />
                           }
                           style={{
@@ -308,11 +332,12 @@ const AddHours: React.FC<{
                       <div className="input-group mb-3">
                         <TimeField
                           value={hour.additionalHours.to}
+                          onChange={handleOnAdditionalHoursChange}
                           input={
                             <input
                               type="text"
                               className="form-control"
-                              id="as"
+                              id={`${i}`}
                               slot="to"
                             />
                           }
